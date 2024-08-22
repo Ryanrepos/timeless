@@ -9,7 +9,8 @@ import { ComponentsModule } from './components/components.module';
 import { DatabaseModule } from './database/database.module';
 
 @Module({
-  imports: [ConfigModule.forRoot(), GraphQLModule.forRoot({
+  imports: [ConfigModule.forRoot(), 
+    GraphQLModule.forRoot({  // GraphQL dan foydalanish uchun yozib oldik
     driver: ApolloDriver,
     playground: true,
     uploads: false,
