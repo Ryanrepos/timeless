@@ -28,7 +28,7 @@ export class MemberResolver {
 
 	@Query(() => String)
 	public async getMember(): Promise<string> {
-		console.log('mutation: getMember');
+		console.log('query: getMember');
 		return this.memberService.getMember();
 	}
 }
