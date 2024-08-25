@@ -8,13 +8,13 @@ const memberSchema = new Schema(
 			enum: MemberType,
 			default: MemberType.USER,
 		},
-		MemberStatus: {
+		memberStatus: {
 			type: String,
 			enum: MemberStatus,
 			default: MemberStatus.ACTIVE,
 		},
 
-		MemberAuthType: {
+		memberAuthType: {
 			type: String,
 			enum: MemberAuthType,
 			default: MemberAuthType.PHONE,
