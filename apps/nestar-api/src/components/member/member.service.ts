@@ -15,12 +15,12 @@ export class MemberService {
 		//TODO: HASH PASSWORDS
 
 		try {
-			const result = this.memberModel.create(input);
+			const result = await this.memberModel.create(input);
             // TODO: AUTHENTICATION WITH TOKENS
 			return result;
 		} catch (err) {
-			console.log('Error, Service.model:', err);
-            throw new BadRequestException(err);
+			console.log('Error, Service.model:', err.message);
+            throw new BadRequestException(Message.USED_MEMBER_NICK_OR_PHONE);
 		}
 	}
 

@@ -15,26 +15,14 @@ export class MemberResolver {
 
 	@Mutation(() => Member) // Member DTO
 	public async signup(@Args("input") input: MemberInput): Promise<Member> {
-		try {
 			console.log('mutation: signup');
 			return this.memberService.signup(input);
-		} catch(err) {
-			console.log("Error, signup:", err);
-			throw new InternalServerErrorException(err);
-		}
 	}
 
 	@Mutation(() => Member)
 	public async login(@Args("input") input: LoginInput): Promise<Member> {
-		try {
 			console.log('mutation: login');
-			console.log('input:', input);
-			
 			return this.memberService.login(input);
-		} catch(err) {
-			console.log("Error, login:", err);
-			throw new InternalServerErrorException(err);
-		}
 	}
 
 	@Mutation(() => String)
