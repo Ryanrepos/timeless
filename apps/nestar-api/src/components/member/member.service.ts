@@ -6,14 +6,16 @@ import { LoginInput, MemberInput } from '../../libs/dto/member/member.input';
 import { MemberStatus } from '../../libs/enums/member.enum';
 import { internalExecuteOperation } from '@apollo/server/dist/esm/ApolloServer';
 import { Message } from '../../libs/enums/common.enum';
+import { AuthService } from '../auth/auth.service';
 
 @Injectable()
 export class MemberService {
-	constructor(@InjectModel('Member') private readonly memberModel: Model<Member>) {} // Member DTO
+	constructor(@InjectModel('Member') private readonly memberModel: Model<Member>, 
+	private authService: AuthService ) {} // Member is DTO
 
 	public async signup(input: MemberInput): Promise<Member> {
-		//TODO: HASH PASSWORDS
-
+		// HASH PASSWORDS
+		input.memberPassword = await this.authService.hashPassword(input.memberPassword);
 		try {
 			const result = await this.memberModel.create(input);
             // TODO: AUTHENTICATION WITH TOKENS
@@ -37,7 +39,7 @@ export class MemberService {
         }
 
         // COMPARE PASSWORD
-        const isMatch = memberPassword === response.memberPassword;
+        const isMatch = await this.authService.comparePassword(input.memberPassword, response.memberPassword);
         if(!isMatch) throw new InternalServerErrorException(Message.WRONG_PASSWORD);
 
         return response;
