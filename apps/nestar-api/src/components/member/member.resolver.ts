@@ -13,17 +13,18 @@ export class MemberResolver {
 	constructor(private readonly memberService: MemberService) {}
 
 	@Mutation(() => Member) // Member DTO
-	public async signup(@Args("input") input: MemberInput): Promise<Member> {
-			console.log('mutation: signup');
-			return this.memberService.signup(input);
+	public async signup(@Args('input') input: MemberInput): Promise<Member> {
+		console.log('mutation: signup');
+		return this.memberService.signup(input);
 	}
 
 	@Mutation(() => Member)
-	public async login(@Args("input") input: LoginInput): Promise<Member> {
-			console.log('mutation: login');
-			return this.memberService.login(input);
+	public async login(@Args('input') input: LoginInput): Promise<Member> {
+		console.log('mutation: login');
+		return this.memberService.login(input);
 	}
 
+	// Authenticated users (USER, ADMIN, AGENT)
 	@Mutation(() => String)
 	public async updateMember(): Promise<string> {
 		console.log('mutation: updateMember');
@@ -34,5 +35,20 @@ export class MemberResolver {
 	public async getMember(): Promise<string> {
 		console.log('query: getMember');
 		return this.memberService.getMember();
+	}
+
+	/** ADMIN **/
+	// Authorization: ADMIN
+	@Mutation(() => String)
+	public async getAllMembersByAdmin(): Promise<string> {
+		console.log('mutation: getAllMembersByAdmin');
+		return this.memberService.getAllMembersByAdmin();
+	}
+
+	// Authorization: ADMIN
+	@Mutation(() => String)
+	public async updateMemberByAdmin(): Promise<string> {
+		console.log('mutation: updateMemberByAdmin');
+		return this.memberService.updateMemberByAdmin();
 	}
 }

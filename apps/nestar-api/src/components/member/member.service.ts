@@ -10,8 +10,8 @@ import { AuthService } from '../auth/auth.service';
 
 @Injectable()
 export class MemberService {
-	constructor(@InjectModel('Member') private readonly memberModel: Model<Member>, 
-	private authService: AuthService ) {} // Member is DTO
+	constructor(@InjectModel('Member') private readonly memberModel: Model<Member>, // Member is DTO
+	private authService: AuthService ) {} 
 
 	public async signup(input: MemberInput): Promise<Member> {
 		// HASH PASSWORDS
@@ -56,4 +56,14 @@ export class MemberService {
 	public async getMember(): Promise<string> {
 		return 'getMember executed';
 	}
+
+
+	public async getAllMembersByAdmin(): Promise<string> {
+		return 'getAllMembersByAdmin executed';
+	}
+
+	public async updateMemberByAdmin(): Promise<string> {
+		return 'updateMemberByAdmin executed';
+	}
+
 }
