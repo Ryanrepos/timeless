@@ -44,6 +44,10 @@ class BAISearch {
 
 @InputType()
 export class BoardArticlesInquiry {
+    private _id: any;
+    private _id(_id: any): any {
+        throw new Error('Method not implemented.');
+    }
 	@IsNotEmpty()
 	@Min(1)
 	@Field(() => Int)
