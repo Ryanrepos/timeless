@@ -3,6 +3,7 @@ import { IsIn, IsNotEmpty, IsOptional, Length, Min } from 'class-validator';
 import { ObjectId } from 'mongoose';
 import { BoardArticleCategory, BoardArticleStatus } from '../../enums/board-article.enum';
 import { Direction } from '../../enums/common.enum';
+import { availableBoardArticleSorts } from '../../config';
 
 @InputType()
 export class BoardArticleInput {
@@ -44,10 +45,6 @@ class BAISearch {
 
 @InputType()
 export class BoardArticlesInquiry {
-    private _id: any;
-    private _id(_id: any): any {
-        throw new Error('Method not implemented.');
-    }
 	@IsNotEmpty()
 	@Min(1)
 	@Field(() => Int)
@@ -59,7 +56,7 @@ export class BoardArticlesInquiry {
 	limit: number;
 
 	@IsOptional()
-	@IsIn(['createdAt', 'updatedAt', 'articleLikes', 'articleViews'])
+	@IsIn(availableBoardArticleSorts)
 	@Field(() => String, { nullable: true })
 	sort?: string;
 
@@ -96,7 +93,7 @@ export class AllBoardArticlesInquiry {
 	limit: number;
 
 	@IsOptional()
-	@IsIn(['createdAt', 'updatedAt', 'articleLikes', 'articleViews'])
+	@IsIn(availableBoardArticleSorts)
 	@Field(() => String, { nullable: true })
 	sort?: string;
 
