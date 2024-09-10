@@ -76,6 +76,7 @@ export class BoardArticleResolver {
 		return await this.boardArticleService.getAllBoardArticlesByAdmin(input);
 	}
 
+    // FIX
 	@Roles(MemberType.ADMIN)
 	@UseGuards(RolesGuard)
 	@Mutation(() => BoardArticle)
