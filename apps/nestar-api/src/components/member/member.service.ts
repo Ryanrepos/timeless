@@ -104,6 +104,12 @@ export class MemberService {
 			}
 
 			// meLiked
+			const likeInput = { 
+				memberId: memberId, 
+				likeRefId: targetId,
+				likeGroup: LikeGroup.MEMBER
+			};
+			targetMember.meLiked = await this.likeService.checkLikeExistence(likeInput);
 			// meFollowed
 		}
 
@@ -148,22 +154,20 @@ export class MemberService {
 		const input: LikeInput = {
 			memberId: memberId,
 			likeRefId: likeRefId,
-			likeGroup: LikeGroup.MEMBER
+			likeGroup: LikeGroup.MEMBER,
 		};
 
-		// LIKE TOGGLE 
+		// LIKE TOGGLE
 
 		const modifier: number = await this.likeService.toggleLike(input);
-		const result = await this.memberStatsEditor(
-			{
-				_id: likeRefId,
-				targetKey: 'memberLikes',
-				modifier: modifier
-			}
-		);
+		const result = await this.memberStatsEditor({
+			_id: likeRefId,
+			targetKey: 'memberLikes',
+			modifier: modifier,
+		});
 
-		if(!result) throw new InternalServerErrorException(Message.SOMETHING_WENT_WRONG);
-		return result
+		if (!result) throw new InternalServerErrorException(Message.SOMETHING_WENT_WRONG);
+		return result;
 	}
 
 	public async getAllMembersByAdmin(input: MembersInquiry): Promise<Members> {
