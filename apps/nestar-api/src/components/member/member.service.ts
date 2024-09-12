@@ -163,10 +163,7 @@ export class MemberService {
 		);
 
 		if(!result) throw new InternalServerErrorException(Message.SOMETHING_WENT_WRONG);
-		return result;
-
-
-
+		return result
 	}
 
 	public async getAllMembersByAdmin(input: MembersInquiry): Promise<Members> {
