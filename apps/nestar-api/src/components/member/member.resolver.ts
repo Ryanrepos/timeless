@@ -70,7 +70,8 @@ export class MemberResolver {
 
 	@UseGuards(WithoutGuard)
 	@Query(() => Member)
-	public async getMember(@Args('memberId') input: string, @AuthMember('_id') memberId: ObjectId): Promise<Member> {
+	public async getMember(@Args('memberId') input: string, 
+	@AuthMember('_id') memberId: ObjectId): Promise<Member> {
 		console.log('query: getMember');
 		console.log('memberId:', memberId);
 		const targetId = shapeIntoMongoObjectId(input);
@@ -79,7 +80,8 @@ export class MemberResolver {
 
 	@UseGuards(WithoutGuard)
 	@Query(() => Members)
-	public async getAgents(@Args('input') input: AgentsInquiry, @AuthMember('_id') memberId: ObjectId): Promise<Members> {
+	public async getAgents(@Args('input') input: AgentsInquiry, //
+	@AuthMember('_id') memberId: ObjectId): Promise<Members> {
 		console.log('Query GetAgents');
 		return await this.memberService.getAgents(memberId, input);
 	}
@@ -101,7 +103,8 @@ export class MemberResolver {
 	@Roles(MemberType.ADMIN)
 	@UseGuards(RolesGuard)
 	@Query(() => Members)
-	public async getAllMembersByAdmin(@Args('input') input: MembersInquiry): Promise<Members> {
+	public async getAllMembersByAdmin(
+		@Args('input') input: MembersInquiry): Promise<Members> {
 		console.log('Query getAllMembersByAdmin');
 		return await this.memberService.getAllMembersByAdmin(input);
 	}
