@@ -14,12 +14,13 @@ import { LikeInput } from '../../libs/dto/like/like.input';
 import { LikeGroup } from '../../libs/enums/like.enum';
 import { LikeService } from '../like/like.service';
 import { Follower, Following, MeFollowed } from '../../libs/dto/follow/follow';
+import { lookupAuthMemberLiked } from '../../libs/config';
 
 @Injectable()
 export class MemberService {
 	constructor(
 		@InjectModel('Member') private readonly memberModel: Model<Member>, // Member is DTO
-		@InjectModel('Member') private readonly followModel: Model<Follower | Following>, 
+		@InjectModel('Member') private readonly followModel: Model<Follower | Following>,
 		private authService: AuthService,
 		private viewService: ViewService,
 		private likeService: LikeService,
@@ -106,10 +107,10 @@ export class MemberService {
 			}
 
 			// meLiked
-			const likeInput = { 
-				memberId: memberId, 
+			const likeInput = {
+				memberId: memberId,
 				likeRefId: targetId,
-				likeGroup: LikeGroup.MEMBER
+				likeGroup: LikeGroup.MEMBER,
 			};
 			targetMember.meLiked = await this.likeService.checkLikeExistence(likeInput);
 			// meFollowed
@@ -120,20 +121,22 @@ export class MemberService {
 		return targetMember;
 	}
 
-	private async checksubscription(followerId: ObjectId, followingId: ObjectId): Promise<MeFollowed[]>{
-		const result = await this.followModel.findOne(
-			{
+	private async checksubscription(followerId: ObjectId, followingId: ObjectId): Promise<MeFollowed[]> {
+		const result = await this.followModel
+			.findOne({
 				followerId: followerId,
 				followingId: followingId,
-			}
-		).exec();
-		return result ? [
-			{
-				followerId: followerId,
-				followingId: followingId,
-				myFollowing: true
-			}
-		]:[];
+			})
+			.exec();
+		return result
+			? [
+					{
+						followerId: followerId,
+						followingId: followingId,
+						myFollowing: true,
+					},
+				]
+			: [];
 	}
 
 	public async getAgents(memberId: ObjectId, input: AgentsInquiry): Promise<Members> {
@@ -150,7 +153,9 @@ export class MemberService {
 				{ $sort: sort },
 				{
 					$facet: {
-						list: [{ $skip: (input.page - 1) * input.limit }, { $limit: input.limit }],
+						list: [{ $skip: (input.page - 1) * input.limit }, { $limit: input.limit }, 
+							lookupAuthMemberLiked(memberId),
+						],
 						metaCounter: [{ $count: 'total' }],
 					},
 				},
