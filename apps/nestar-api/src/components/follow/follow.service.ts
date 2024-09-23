@@ -21,6 +21,7 @@ export class FollowService {
 			throw new InternalServerErrorException(Message.SELF_SUBSCRIPTION_DENIED);
 		}
 
+		// check member existence
 		const targetMember = await this.memberService.getMember(null, followingId);
 		if (!targetMember) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
 
@@ -28,13 +29,13 @@ export class FollowService {
 
 		await this.memberService.memberStatsEditor({
 			_id: followerId,
-			targetKey: 'memberFollowings',
+			targetKey: 'memberFollowings',  // followingni oshiryabdi
 			modifier: 1,
 		});
 
 		await this.memberService.memberStatsEditor({
 			_id: followingId,
-			targetKey: 'memberFollowers',
+			targetKey: 'memberFollowers',  // followerni oshiryabdi
 			modifier: 1,
 		});
 
@@ -43,7 +44,7 @@ export class FollowService {
 
 	private async registerSubscription(followerId: ObjectId, followingId: ObjectId): Promise<Follower> {
 		try {
-			return await this.followModel.create({
+			return await this.followModel.create({ // follow schema model
 				followingId: followingId,
 				followerId: followerId,
 			});
@@ -97,6 +98,7 @@ export class FollowService {
 							lookupAuthMemberLiked(memberId, "$followingId"),
 							//meFollowed
 							lookupAuthMemberFollowed({
+								
 								followerId: memberId, 
 								followingId: "$followingId"}),
 							lookupFollowingData,
