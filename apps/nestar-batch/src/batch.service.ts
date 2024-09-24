@@ -66,4 +66,8 @@ export class BatchService {
 
     await Promise.all(promisedList);
   }
+
+  public getHello(): string {
+    return "Welcome to Nestar Batch Server";
+  }
 }
