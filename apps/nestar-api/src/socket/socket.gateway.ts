@@ -3,12 +3,12 @@ import { OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer } fr
 import { Server } from 'ws';
 import * as WebSocket from 'ws';
 
-interface MessagePayload {
+interface MessagePayload {  // actual content of  message 
 	event: string;
 	text: string;
 }
 
-interface InfoPayload {
+interface InfoPayload {   // number of clients
 	event: string;
 	totalClients: number;
 }
@@ -57,6 +57,7 @@ export class SocketGateway implements OnGatewayInit {
 		this.emitMessage(newMessage);
 	}
 
+	// Sends messages to all clients except one who sent message
 	private broadcastMessage(sender: WebSocket, message: InfoPayload | MessagePayload) {
 		this.server.clients.forEach((client) => {
 			if (client !== sender && client.readyState === WebSocket.OPEN) {
@@ -65,6 +66,7 @@ export class SocketGateway implements OnGatewayInit {
 		});
 	}
 
+	// Responsible for sending messages to all clients
 	private emitMessage(message: InfoPayload | MessagePayload) {
 		this.server.clients.forEach((client) => {
 			if (client.readyState === WebSocket.OPEN) {
