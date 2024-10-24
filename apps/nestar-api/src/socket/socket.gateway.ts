@@ -35,7 +35,7 @@ export class SocketGateway implements OnGatewayInit {
 		this.logger.verbose(`Websocket Server Initialized & total: [${this.summaryClient}]`);
 	}
 
-	private async retrieveAuth(req: any): Promise<Member> {
+	private async retrieveAuth(req: any): Promise<Member> {  // extracting the token from client's request URL
 		try{
 		 const parseUrl = url.parse(req.url, true);
 		 const {token} = parseUrl.query;
@@ -50,7 +50,7 @@ export class SocketGateway implements OnGatewayInit {
 		const authMember = await this.retrieveAuth(req);
 		console.log('authMember', authMember);
 		  this.summaryClient++;
-		this.clientAuthMap.set(client, authMember)
+		this.clientAuthMap.set(client, authMember)  // storing the client & authenticated member info in clientAuthMap
 		
 		const clientNick: string = authMember?.memberNick ?? 'Guest'
 		this.logger.verbose(`Connection ${clientNick} & total [${this.summaryClient}]`)
