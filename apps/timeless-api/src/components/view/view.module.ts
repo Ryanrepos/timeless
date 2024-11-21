@@ -9,3 +9,4 @@ import ViewSchema from '../../schemas/View.model';
   exports: [ViewService],
 })
 export class ViewModule {}
+  

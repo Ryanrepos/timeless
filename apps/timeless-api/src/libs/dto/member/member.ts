@@ -5,7 +5,7 @@ import { MeLiked } from '../like/like';
 import { MeFollowed } from '../follow/follow';
 
 @ObjectType()
-export class Member {
+export class Member {   	// data coming from database to frontend
 	@Field(() => String)
 	_id: ObjectId;
 

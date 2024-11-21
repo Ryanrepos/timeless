@@ -5,7 +5,7 @@ import { Direction } from '../../enums/common.enum';
 import { availableAgentSorts, availableMemberSorts } from '../../config';
 
 @InputType()
-export class MemberInput {
+export class MemberInput {   // data entering server 
 	// memberNick
 	@IsNotEmpty() // checks input data is empty or not
 	@Length(3, 12) // checks member nick be at least 3 and 12 range

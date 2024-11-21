@@ -5,9 +5,8 @@ import { DatabaseModule } from './database/database.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { BatchController } from './batch.controller';
 import { MongooseModule } from '@nestjs/mongoose';
-import PropertySchema from 'apps/nestar-api/src/schemas/Property.model';
-import MemberSchema from 'apps/nestar-api/src/schemas/Member.model';
-
+import PropertySchema from 'apps/timeless-api/src/schemas/Property.model';
+import MemberSchema from 'apps/timeless-api/src/schemas/Member.model'
 
 @Module({
 	imports: [ConfigModule.forRoot(), 
