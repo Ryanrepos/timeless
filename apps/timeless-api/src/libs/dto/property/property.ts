@@ -1,6 +1,6 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { ObjectId } from 'mongoose';
-import { PropertyLocation, PropertyStatus, PropertyType } from '../../enums/property.enum';
+import { PropertyBrand, PropertyCategory, PropertyLocation, PropertyStatus } from '../../enums/property.enum';
 import { Member, TotalCounter } from '../member/member';
 import { MeLiked } from '../like/like';
 
@@ -9,8 +9,11 @@ export class Property {
 	@Field(() => String)
 	_id: ObjectId;
 
-	@Field(() => PropertyType)
-	propertyType: PropertyType;
+	@Field(() => PropertyCategory)
+	propertyCategory: PropertyCategory;
+	
+	@Field(() => PropertyBrand)
+	propertyBrand: PropertyBrand;
 
 	@Field(() => PropertyStatus)
 	propertyStatus: PropertyStatus;
@@ -26,15 +29,6 @@ export class Property {
 
 	@Field(() => Number)
 	propertyPrice: number;
-
-	@Field(() => Number)
-	propertySquare: number;
-
-	@Field(() => Int)
-	propertyBeds: number;
-
-	@Field(() => Int)
-	propertyRooms: number;
 
 	@Field(() => Int)
 	propertyViews: number;
@@ -55,10 +49,10 @@ export class Property {
 	propertyDesc?: string;
 
 	@Field(() => Boolean)
-	propertyBarter: boolean;
+	propertyNew: boolean;
 
 	@Field(() => Boolean)
-	propertyRent: boolean;
+	propertyWorn: boolean;
 
 	@Field(() => String)
 	memberId: ObjectId;

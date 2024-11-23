@@ -1,6 +1,6 @@
 import { Field, InputType, Int } from '@nestjs/graphql';
 import { IsNotEmpty, IsOptional, Length, Min, IsInt } from 'class-validator';
-import { PropertyLocation, PropertyStatus, PropertyType } from '../../enums/property.enum';
+import { PropertyBrand, PropertyCategory, PropertyLocation, PropertyStatus } from '../../enums/property.enum';
 import { ObjectId } from 'mongoose';
 
 @InputType()
@@ -10,12 +10,16 @@ export class PropertyUpdate {
 	_id: ObjectId;
 
 	@IsOptional()
-	@Field(() => PropertyType, { nullable: true })
-	memberType?: PropertyType;
+	@Field(() => PropertyCategory, { nullable: true })
+	propertyCategory?: PropertyCategory;
 
 	@IsOptional()
 	@Field(() => PropertyStatus, { nullable: true })
 	propertyStatus?: PropertyStatus;
+
+	@IsOptional()
+	@Field(() => PropertyBrand, { nullable: true })
+	propertyBrand?: PropertyBrand;
 
 	@IsOptional()
 	@Field(() => PropertyLocation, { nullable: true })
@@ -36,22 +40,6 @@ export class PropertyUpdate {
 	propertyPrice?: number;
 
 	@IsOptional()
-	@Field(() => Number, { nullable: true })
-	propertySquare?: number;
-
-	@IsOptional()
-	@IsInt()
-	@Min(1)
-	@Field(() => Int, { nullable: true })
-	propertyBeds?: number;
-
-	@IsOptional()
-	@IsInt()
-	@Min(1)
-	@Field(() => Int, { nullable: true })
-	propertyRooms?: number;
-
-	@IsOptional()
 	@Field(() => [String], { nullable: true })
 	propertyImages?: string[];
 
@@ -62,11 +50,11 @@ export class PropertyUpdate {
 
 	@IsOptional()
 	@Field(() => Boolean, { nullable: true })
-	propertyBarter?: boolean;
+	propertyNew?: boolean;
 
 	@IsOptional()
 	@Field(() => Boolean, { nullable: true })
-	propertyRent?: boolean;
+	propertyWorn?: boolean;
 
 	soldAt?: Date;
 

@@ -1,11 +1,11 @@
 import { Schema } from 'mongoose';
-import { PropertyLocation, PropertyStatus, PropertyType } from '../libs/enums/property.enum';
+import { PropertyLocation, PropertyStatus, PropertyCategory, PropertyBrand } from '../libs/enums/property.enum';
 
 const PropertySchema = new Schema(
 	{
-		propertyType: {
+		propertyCategory: {
 			type: String,
-			enum: PropertyType,
+			enum: PropertyCategory,
 			required: true,
 		},
 
@@ -13,6 +13,12 @@ const PropertySchema = new Schema(
 			type: String,
 			enum: PropertyStatus,
 			default: PropertyStatus.ACTIVE,
+		},
+
+		propertyBrand: {
+			type: String,
+			enum: PropertyBrand,
+			required: true,
 		},
 
 		propertyLocation: {
@@ -32,21 +38,6 @@ const PropertySchema = new Schema(
 		},
 
 		propertyPrice: {
-			type: Number,
-			required: true,
-		},
-
-		propertySquare: {
-			type: Number,
-			required: true,
-		},
-
-		propertyBeds: {
-			type: Number,
-			required: true,
-		},
-
-		propertyRooms: {
 			type: Number,
 			required: true,
 		},
@@ -80,12 +71,12 @@ const PropertySchema = new Schema(
 			type: String,
 		},
 
-		propertyBarter: {
+		propertyNew: {
 			type: Boolean,
 			default: false,
 		},
 
-		propertyRent: {
+		propertyWorn: {
 			type: Boolean,
 			default: false,
 		},

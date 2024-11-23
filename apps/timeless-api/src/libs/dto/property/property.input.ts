@@ -1,6 +1,6 @@
 import { Field, InputType, Int } from '@nestjs/graphql';
 import { IsIn, IsInt, IsNotEmpty, IsOptional, Length, Min } from 'class-validator';
-import { PropertyLocation, PropertyStatus, PropertyType } from '../../enums/property.enum';
+import { PropertyBrand, PropertyCategory, PropertyLocation, PropertyStatus } from '../../enums/property.enum';
 import { ObjectId } from 'mongoose';
 import { availableOptions, availablePropertySorts } from '../../config';
 import { Direction } from '../../enums/common.enum';
@@ -8,8 +8,12 @@ import { Direction } from '../../enums/common.enum';
 @InputType()
 export class PropertyInput {
 	@IsNotEmpty()
-	@Field(() => PropertyType)
-	propertyType: PropertyType;
+	@Field(() => PropertyCategory)
+	propertyCategory: PropertyCategory;
+
+	@IsNotEmpty()
+	@Field(() => PropertyBrand)
+	propertyBrand: PropertyBrand;
 
 	@IsNotEmpty()
 	@Field(() => PropertyLocation)
@@ -30,22 +34,6 @@ export class PropertyInput {
 	propertyPrice: number;
 
 	@IsNotEmpty()
-	@Field(() => Number)
-	propertySquare: number;
-
-	@IsNotEmpty()
-	@IsInt()
-	@Min(1)
-	@Field(() => Int)
-	propertyBeds: number;
-
-	@IsNotEmpty()
-	@IsInt()
-	@Min(1)
-	@Field(() => Int)
-	propertyRooms: number;
-
-	@IsNotEmpty()
 	@Field(() => [String])
 	propertyImages: string[];
 
@@ -53,6 +41,16 @@ export class PropertyInput {
 	@Length(5, 500)
 	@Field(() => String, { nullable: true })
 	propertyDesc?: string;
+
+
+	@IsOptional()
+	@Field(() => Boolean, { nullable: true })
+	propertyNew?: boolean;
+
+	@IsOptional()
+	@Field(() => Boolean, { nullable: true })
+	propertyWorn?: boolean;
+
 
 	@IsOptional()
 	@Field(() => Boolean, { nullable: true })
@@ -79,16 +77,6 @@ class PricesRange {
 }
 
 @InputType()
-class SquaresRange {
-	@Field(() => Int)
-	start: number;
-
-	@Field(() => Int)
-	end: number;
-}
-
-
-@InputType()
 class PeriodsRange {
 	@Field(() => Date)
 	start: Date;
@@ -96,7 +84,6 @@ class PeriodsRange {
 	@Field(() => Date)
 	end: Date;
 }
-
 
 @InputType()
 class PISearch {
@@ -109,16 +96,12 @@ class PISearch {
 	locationList?: PropertyLocation[];
 
 	@IsOptional()
-	@Field(() => [PropertyType], { nullable: true })
-	typeList?: PropertyType[];
+	@Field(() => [PropertyCategory], { nullable: true })
+	categoryList?: PropertyCategory[];
 
 	@IsOptional()
-	@Field(() => [Int], { nullable: true })
-	roomsList?: Number[];
-
-	@IsOptional()
-	@Field(() => [Int], { nullable: true })
-	bedsList?: Number[];
+	@Field(() => [PropertyBrand], { nullable: true })
+	brandList?: PropertyBrand[];
 
 	@IsOptional()
 	@IsIn(availableOptions, { each: true })
@@ -132,10 +115,6 @@ class PISearch {
 	@IsOptional()
 	@Field(() => PeriodsRange, { nullable: true })
 	periodsRange?: PeriodsRange;
-
-	@IsOptional()
-	@Field(() => SquaresRange, { nullable: true })
-	squaresRange?: SquaresRange;
 
 	@IsOptional()
 	@Field(() => String, { nullable: true })
