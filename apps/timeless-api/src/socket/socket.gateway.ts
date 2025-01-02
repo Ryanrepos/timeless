@@ -46,7 +46,7 @@ export class SocketGateway implements OnGatewayInit {
 		}
 	}
 
-	public async handleConnection(client: WebSocket, req:any) {
+	public async handleConnection(client: WebSocket, req:any) {  // this works when new clients connect to websocket
 		const authMember = await this.retrieveAuth(req);
 		console.log('authMember', authMember);
 		  this.summaryClient++;
@@ -64,7 +64,8 @@ export class SocketGateway implements OnGatewayInit {
 		this.emitMessage(infoMsg)
 		client.send(JSON.stringify({event: 'getMessage', list: this.messagesList}))
 	  }
-	  public handleDisconnect(client: WebSocket){
+
+	  public handleDisconnect(client: WebSocket) {   // works when user disconnects
 		const authMember = this.clientAuthMap.get(client)
 		this.summaryClient--;
 		this.clientAuthMap.delete(client)
@@ -81,7 +82,7 @@ export class SocketGateway implements OnGatewayInit {
 		this.broadcastMessage(client, infoMsg)
 	  }
 
-	@SubscribeMessage('message')
+	@SubscribeMessage('message')   // webSocket subscribing message
 	public async handleMessage(client: any, payload: string): Promise<void> {
 		const authMember = this.clientAuthMap.get(client)
 		const newMessage: MessagePayload = { event: "message", text: payload, memberData: authMember};

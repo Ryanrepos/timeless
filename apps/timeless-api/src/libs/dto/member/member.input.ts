@@ -23,6 +23,10 @@ export class MemberInput {   // data entering server
 	@Field(() => String)
 	memberPhone: string;
 
+	@IsNotEmpty()
+	@Field(() => String)
+	memberImage: string;
+
 	@IsOptional()
 	@Field(() => MemberType, { nullable: true })
 	memberType?: MemberType;

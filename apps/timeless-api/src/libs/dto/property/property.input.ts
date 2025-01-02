@@ -42,7 +42,6 @@ export class PropertyInput {
 	@Field(() => String, { nullable: true })
 	propertyDesc?: string;
 
-
 	@IsOptional()
 	@Field(() => Boolean, { nullable: true })
 	propertyNew?: boolean;
@@ -50,15 +49,6 @@ export class PropertyInput {
 	@IsOptional()
 	@Field(() => Boolean, { nullable: true })
 	propertyWorn?: boolean;
-
-
-	@IsOptional()
-	@Field(() => Boolean, { nullable: true })
-	propertyBarter?: boolean;
-
-	@IsOptional()
-	@Field(() => Boolean, { nullable: true })
-	propertyRent?: boolean;
 
 	memberId?: ObjectId;
 

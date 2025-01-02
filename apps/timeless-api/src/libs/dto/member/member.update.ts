@@ -42,7 +42,7 @@ export class MemberUpdate {
 
     @IsOptional()
 	@Field(() => String, { nullable: true })
-	memberAdress?: string;
+	memberAddress?: string;
 
     @IsOptional()
 	@Field(() => String, { nullable: true })

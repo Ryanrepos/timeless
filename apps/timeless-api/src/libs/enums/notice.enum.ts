@@ -3,7 +3,7 @@ import { registerEnumType } from '@nestjs/graphql';
 export enum NoticeCategory {
 	FAQ = 'FAQ',
 	TERMS = 'TERMS',
-	INQUIRY = 'INQUIRY',
+	EVENT = 'EVENT',
 }
 registerEnumType(NoticeCategory, {
 	name: 'NoticeCategory',
@@ -17,3 +17,14 @@ export enum NoticeStatus {
 registerEnumType(NoticeStatus, {
 	name: 'NoticeStatus',
 });
+
+export enum FAQCategory {
+	PRODUCT = 'PRODUCT',
+	PAYMENT = 'PAYMENT',
+	BUYER = 'BUYER',
+	COMMUNITY ='COMMUNITY',
+	OTHER = 'OTHER'
+}
+registerEnumType(FAQCategory, {
+	name: 'FAQCategory',
+}); 
