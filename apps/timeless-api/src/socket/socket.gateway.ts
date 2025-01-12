@@ -28,6 +28,7 @@ export class SocketGateway implements OnGatewayInit {
 
 	constructor(private authservice: AuthService) {}
 
+	// starting the server
 	@WebSocketServer()
 	server: Server;
 

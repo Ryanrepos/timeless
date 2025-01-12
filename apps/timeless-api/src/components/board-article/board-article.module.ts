@@ -19,7 +19,7 @@ import { LikeModule } from '../like/like.module';
 		AuthModule,
 		MemberModule,
 		ViewModule,
-		LikeModule
+		LikeModule,
 	],
 	providers: [BoardArticleResolver, BoardArticleService],
 	exports: [BoardArticleService],
