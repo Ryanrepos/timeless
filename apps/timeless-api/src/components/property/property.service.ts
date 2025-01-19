@@ -21,6 +21,9 @@ import { lookupAuthMemberLiked, lookupMember, shapeIntoMongoObjectId } from '../
 import { LikeService } from '../like/like.service';
 import { LikeInput } from '../../libs/dto/like/like.input';
 import { LikeGroup } from '../../libs/enums/like.enum';
+import { NotificationInput } from '../../libs/dto/notification/notification.input';
+import { NotificationGroup, NotificationType } from '../../libs/enums/notification.enum';
+import { NotificationService } from '../notification/notification.service';
 
 @Injectable()
 export class PropertyService {
@@ -29,6 +32,7 @@ export class PropertyService {
 		private memberService: MemberService,
 		private viewService: ViewService,
 		private likeService: LikeService,
+		private notificationService: NotificationService,
 	) {}
 
 	public async createProperty(input: PropertyInput): Promise<Property> {
@@ -149,21 +153,12 @@ export class PropertyService {
 	}
 
 	private shapeMatchQuery(match: T, input: PropertiesInquiry): void {
-		const {
-			memberId,
-			locationList,
-			categoryList,
-			brandList,
-			periodsRange,
-			pricesRange,
-			options,
-			text,
-		} = input.search;
+		const { memberId, locationList, categoryList, brandList, periodsRange, pricesRange, options, text } = input.search;
 
 		if (memberId) match.memberId = shapeIntoMongoObjectId(memberId);
 		if (locationList && locationList.length) match.propertyLocation = { $in: locationList };
-		if (categoryList && categoryList.length) match.propertyCategory =  {$in: categoryList };
-		if (brandList && brandList.length) match.propertyBrand =  {$in: brandList };
+		if (categoryList && categoryList.length) match.propertyCategory = { $in: categoryList };
+		if (brandList && brandList.length) match.propertyBrand = { $in: brandList };
 
 		if (pricesRange) match.propertyPrice = { $gte: pricesRange.start, $lte: pricesRange.end };
 		if (periodsRange) match.createdAt = { $gte: periodsRange.start, $lte: periodsRange.end };
@@ -242,7 +237,40 @@ export class PropertyService {
 		});
 
 		if (!result) throw new InternalServerErrorException(Message.SOMETHING_WENT_WRONG);
+
+		// NOTIFICATION LIKE LOGIC
+		const property = await this.getProperty(null, likeRefId);
+		const liker = await this.memberService.getMember(null, memberId);
+		const receiverId = await this.getMemberId(input.likeRefId);
+		if (memberId.toString() !== receiverId.toString()) {
+			const notification: NotificationInput = {
+				notificationType: NotificationType.LIKE,
+				notificationGroup: NotificationGroup.PROPERTY,
+				notificationTitle: `${liker.memberNick} has liked your '${property.propertyTitle}' watch`,
+				authorId: memberId,
+				receiverId: receiverId,
+				propertyId: likeRefId,
+				articleId: null,
+			};
+			if (modifier === 1) {
+				await this.notificationService.createNotif(notification);
+			} else {
+				const input = {
+					authorId: memberId,
+					receiverId: receiverId,
+					productId: likeRefId,
+				};
+				await this.notificationService.deleteNotif(input);
+			}
+		}
+
 		return result;
+	}
+
+	public async getMemberId(productId: ObjectId): Promise<ObjectId> {
+		const result = await this.propertyModel.findOne({ _id: productId });
+		if (!result) throw new InternalServerErrorException(Message.BLOCKED_USER);
+		return result.memberId;
 	}
 
 	public async getAllPropertiesByAdmin(input: AllPropertiesInquiry): Promise<Properties> {

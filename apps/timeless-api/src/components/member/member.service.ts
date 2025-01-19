@@ -15,6 +15,9 @@ import { LikeGroup } from '../../libs/enums/like.enum';
 import { LikeService } from '../like/like.service';
 import { Follower, Following, MeFollowed } from '../../libs/dto/follow/follow';
 import { lookupAuthMemberLiked } from '../../libs/config';
+import { NotificationInput } from '../../libs/dto/notification/notification.input';
+import { NotificationGroup, NotificationType } from '../../libs/enums/notification.enum';
+import { NotificationService } from '../notification/notification.service';
 
 @Injectable()
 export class MemberService {
@@ -24,6 +27,7 @@ export class MemberService {
 		private authService: AuthService,
 		private viewService: ViewService,
 		private likeService: LikeService,
+		private notificationService: NotificationService,
 	) {}
 
 	public async signup(input: MemberInput): Promise<Member> {
@@ -153,10 +157,7 @@ export class MemberService {
 				{ $sort: sort },
 				{
 					$facet: {
-						list: [{ $skip: (input.page - 1) * input.limit }, 
-							{ $limit: input.limit }, 
-							lookupAuthMemberLiked(memberId),
-						],
+						list: [{ $skip: (input.page - 1) * input.limit }, { $limit: input.limit }, lookupAuthMemberLiked(memberId)],
 						metaCounter: [{ $count: 'total' }],
 					},
 				},
@@ -167,14 +168,9 @@ export class MemberService {
 	}
 
 	/** LIKE LOGIC **/
-	public async likeTargetMember(memberId: ObjectId, likeRefId: ObjectId): Promise<Member> {
-		const target: Member = await this.memberModel
-			.findOne({
-				_id: likeRefId,
-				memberStatus: MemberStatus.ACTIVE,
-			})
-			.exec();
 
+	public async likeTargetMember(memberId: ObjectId, likeRefId: ObjectId): Promise<Member> {
+		const target: Member = await this.memberModel.findOne({ _id: likeRefId, memberStatus: MemberStatus.ACTIVE });
 		if (!target) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
 
 		const input: LikeInput = {
@@ -183,8 +179,7 @@ export class MemberService {
 			likeGroup: LikeGroup.MEMBER,
 		};
 
-		// LIKE TOGGLE
-
+		// LIKE TOGGLE via Like module
 		const modifier: number = await this.likeService.toggleLike(input);
 		const result = await this.memberStatsEditor({
 			_id: likeRefId,
@@ -193,7 +188,43 @@ export class MemberService {
 		});
 
 		if (!result) throw new InternalServerErrorException(Message.SOMETHING_WENT_WRONG);
-		return result;
+
+		if (memberId.toString() !== likeRefId.toString()) {
+			const likingObject = await this.getMember(null, memberId);
+			const notification: NotificationInput = {
+				notificationType: NotificationType.LIKE,
+				notificationGroup: NotificationGroup.MEMBER,
+				notificationTitle: `${likingObject.memberNick} liked you`,
+				authorId: memberId,
+				receiverId: likeRefId,
+				propertyId: null,
+				articleId: null,
+			};
+			if (modifier === 1) {
+				const result = await this.notificationService.createNotif(notification);
+				console.log('Result:', result);
+			} else {
+				const input = {
+					authorId: memberId,
+					receiverId: likeRefId,
+					productId: null,
+					articleId: null,
+				};
+				if (modifier === 1) {
+					const result = await this.notificationService.createNotif(notification);
+					console.log('Result:', result);
+				} else {
+					const input = {
+						authorId: memberId,
+						receiverId: likeRefId,
+						productId: null,
+						articleId: null,
+					};
+					await this.notificationService.deleteNotif(input);
+				}
+			}
+			return result;
+		}
 	}
 
 	public async getAllMembersByAdmin(input: MembersInquiry): Promise<Members> {

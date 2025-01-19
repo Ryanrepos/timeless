@@ -7,12 +7,16 @@ import { Direction, Message } from '../../libs/enums/common.enum';
 import { FollowInquiry } from '../../libs/dto/follow/follow.input';
 import { T } from '../../libs/types/common';
 import { lookupAuthMemberFollowed, lookupAuthMemberLiked, lookupFollowerData, lookupFollowingData } from '../../libs/config';
+import { NotificationService } from '../notification/notification.service';
+import { NotificationGroup, NotificationType } from '../../libs/enums/notification.enum';
+import { NotificationInput } from '../../libs/dto/notification/notification.input';
 
 @Injectable()
 export class FollowService {
 	constructor(
 		@InjectModel('Follow') private readonly followModel: Model<Follower | Following>,
 		private readonly memberService: MemberService,
+		private readonly notificationService: NotificationService,
 	) {}
 
 	public async subscribe(followerId: ObjectId, followingId: ObjectId): Promise<Follower> {
@@ -24,6 +28,9 @@ export class FollowService {
 		// check member existence
 		const targetMember = await this.memberService.getMember(null, followingId);
 		if (!targetMember) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+
+		const follower = await this.memberService.getMember(null, followerId);
+   		if (!follower) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
 
 		const result = await this.registerSubscription(followerId, followingId);
 
@@ -38,6 +45,18 @@ export class FollowService {
 			targetKey: 'memberFollowers',  // followerni oshiryabdi
 			modifier: 1,
 		});
+
+		// Trigger a notification for the user being followed
+		const notification: NotificationInput = {
+			notificationType: NotificationType.FOLLOW,
+			notificationGroup: NotificationGroup.MEMBER,
+			notificationTitle: `${follower.memberNick}  has followed you`,
+			authorId: followerId,
+			receiverId: followingId,
+			propertyId: null,
+			articleId: null,
+		};
+		await this.notificationService.createNotif(notification);
 
 		return result;
 	}

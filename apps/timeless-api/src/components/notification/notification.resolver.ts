@@ -7,7 +7,7 @@ import { ObjectId } from 'mongoose';
 import { AuthMember } from '../auth/decorators/authMember.decorator';
 import { NotificationUpdate } from '../../libs/dto/notification/notification.update';
 import { shapeIntoMongoObjectId } from '../../libs/config';
-import { Notifications } from '../../libs/dto/notification/notification';
+import { Notifications, Notification } from '../../libs/dto/notification/notification';
 
 @Resolver()
 export class NotificationResolver {
@@ -38,8 +38,15 @@ export class NotificationResolver {
 	@Mutation(() => Notification)
 	public async removeNotification(@Args('notificationId') input: string): Promise<Notification> {
 		console.log('Mutation: removeNotification');
-		const productId = shapeIntoMongoObjectId(input);
-		return await this.notificationService.removeNotification(productId);
+		const propertyId = shapeIntoMongoObjectId(input);
+		return await this.notificationService.removeNotification(propertyId);
 	}
-	
+
+	@UseGuards(AuthGuard)
+	@Mutation(() => Boolean)
+	public async markAsReadNofications(@AuthMember("_id") memberId: ObjectId): Promise<boolean> {
+		console.log("Mutation MarkAsReadNotifications");
+		const count = await this.notificationService.markAsReadNotifications(memberId);
+		return count > 0;
+	}	
 }

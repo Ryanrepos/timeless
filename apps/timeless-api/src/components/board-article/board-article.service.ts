@@ -18,6 +18,9 @@ import { lookupAuthMemberLiked, lookupMember, shapeIntoMongoObjectId } from '../
 import { LikeInput } from '../../libs/dto/like/like.input';
 import { LikeGroup } from '../../libs/enums/like.enum';
 import { LikeService } from '../like/like.service';
+import { NotificationGroup, NotificationType } from '../../libs/enums/notification.enum';
+import { NotificationInput } from '../../libs/dto/notification/notification.input';
+import { NotificationService } from '../notification/notification.service';
 
 @Injectable()
 export class BoardArticleService {
@@ -26,6 +29,7 @@ export class BoardArticleService {
 		private readonly memberService: MemberService,
 		private readonly viewService: ViewService,
 		private readonly likeService: LikeService,
+		private readonly notificationService: NotificationService,
 	) {}
 
 	public async createBoardArticle(memberId: ObjectId, input: BoardArticleInput): Promise<BoardArticle> {
@@ -63,13 +67,12 @@ export class BoardArticleService {
 				targetBoardArticle.articleViews++;
 			}
 
-			const likeInput = { 
-				memberId: memberId, 
+			const likeInput = {
+				memberId: memberId,
 				likeRefId: articleId,
-				likeGroup: LikeGroup.ARTICLE
+				likeGroup: LikeGroup.ARTICLE,
 			};
 			targetBoardArticle.meLiked = await this.likeService.checkLikeExistence(likeInput);
-
 		}
 
 		targetBoardArticle.memberData = await this.memberService.getMember(null, targetBoardArticle.memberId);
@@ -142,7 +145,6 @@ export class BoardArticleService {
 		return result[0];
 	}
 
-
 	/** LIKE LOGIC **/
 	public async likeTargetBoardArticle(memberId: ObjectId, likeRefId: ObjectId): Promise<BoardArticle> {
 		const target: BoardArticle = await this.boardArticleModel
@@ -157,22 +159,54 @@ export class BoardArticleService {
 		const input: LikeInput = {
 			memberId: memberId,
 			likeRefId: likeRefId,
-			likeGroup: LikeGroup.ARTICLE
+			likeGroup: LikeGroup.ARTICLE,
 		};
 
-		// LIKE TOGGLE 
+		// LIKE TOGGLE
 
 		const modifier: number = await this.likeService.toggleLike(input);
-		const result = await this.boardArticleStatsEditor(
-			{
-				_id: likeRefId,
-				targetKey: 'articleLikes',
-				modifier: modifier
-			}
-		);
+		const result = await this.boardArticleStatsEditor({
+			_id: likeRefId,
+			targetKey: 'articleLikes',
+			modifier: modifier,
+		});
 
-		if(!result) throw new InternalServerErrorException(Message.SOMETHING_WENT_WRONG);
-		return result
+		if (!result) throw new InternalServerErrorException(Message.SOMETHING_WENT_WRONG);
+
+		const article = await this.getBoardArticle(null, likeRefId);
+		const likingObject = await this.memberService.getMember(null, memberId);
+		const receiverId = await this.getMemberId(input.likeRefId);
+
+		if (memberId.toString() !== receiverId.toString()) {
+			const notification: NotificationInput = {
+				notificationType: NotificationType.LIKE,
+				notificationGroup: NotificationGroup.ARTICLE,
+				notificationTitle: `${likingObject.memberNick} has liked your '${article.articleTitle}' article`,
+				authorId: memberId,
+				receiverId: receiverId,
+				propertyId: null,
+				articleId: likeRefId,
+			};
+			if (modifier === 1) {
+				await this.notificationService.createNotif(notification);
+			} else {
+				const input = {
+					authorId: memberId,
+					receiverId: receiverId,
+					articleId: likeRefId,
+				};
+				await this.notificationService.deleteNotif(input);
+			}
+			return result;
+		}
+
+		// return result
+	}
+
+	public async getMemberId(articleId: ObjectId): Promise<ObjectId> {
+		const result = await this.boardArticleModel.findOne({ _id: articleId });
+		if (!result) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+		return result.memberId;
 	}
 
 	public async getAllBoardArticlesByAdmin(input: AllBoardArticlesInquiry): Promise<BoardArticles> {
