@@ -13,7 +13,8 @@ export class AuthGuard implements CanActivate {
 			const request = context.getArgByIndex(2).req;
 
 			const bearerToken = request.headers.authorization;
-			if (!bearerToken) throw new BadRequestException(Message.TOKEN_NOT_EXIST);
+			if (!bearerToken) 
+			throw new BadRequestException(Message.TOKEN_NOT_EXIST);
 
 			console.log("bearerToken =>", bearerToken);
 

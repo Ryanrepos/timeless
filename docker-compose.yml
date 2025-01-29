@@ -1,0 +1,45 @@
+# version: "3.3"  yozish shart emas
+
+services:
+  timeless-api:
+    container_name: timeless-api
+    restart: always       # xatolik bersa qayta restart beradi.
+    image: node:20.10.0
+    ports:
+      - 4001:3002
+    volumes:
+      - ./:/usr/src/timeless
+    working_dir: /usr/src/timeless
+
+    networks:
+      - monorepo-network
+
+    # FOR PRODUCTION
+    command: bash -c "npm install && npm run build && npm run start:prod"
+
+
+  timeless-batch:
+    container_name: timeless-batch
+    restart: unless-stopped       # xatolik bersa qayta restart beradi.
+    image: node:20.10.0
+    ports:
+      - 4002:3003
+    volumes:
+      - ./:/usr/src/timeless
+    working_dir: /usr/src/timeless
+
+    networks:
+      - monorepo-network
+
+    # FOR PRODUCTION
+    command: bash -c "npm install && npm run build && npm run start:prod:batch"
+
+networks:
+  monorepo-network:
+    driver: bridge
+
+
+
+# timeless-next:  localhost:4000 => container:3001
+# timeless-api:   localhost:5001 => container:3002
+# timeless-batch: localhost:5002 => container:3003

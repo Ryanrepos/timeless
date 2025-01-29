@@ -1,8 +1,9 @@
-import { InputType, Field, Int } from '@nestjs/graphql';
-import { NotificationType, NotificationGroup, NotificationStatus } from '../../enums/notification.enum';
+
+import { Field, InputType, Int } from '@nestjs/graphql';
 import { IsNotEmpty, IsOptional, Min } from 'class-validator';
-import { Direction } from '../../enums/common.enum';
+import { NotificationGroup, NotificationStatus, NotificationType } from '../../enums/notification.enum';
 import { ObjectId } from 'mongoose';
+import { Direction } from '../../enums/common.enum';
 
 @InputType()
 export class NotificationInput {
@@ -10,18 +11,18 @@ export class NotificationInput {
 	@Field(() => NotificationType)
 	notificationType: NotificationType;
 
-	@Field(() => NotificationStatus, {nullable: true})
+	@Field(() => NotificationStatus)
 	notificationStatus?: NotificationStatus;
 
 	@IsNotEmpty()
 	@Field(() => NotificationGroup)
-	notificationGroup: NotificationGroup;
+	notificationGroup: NotificationGroup | any;
 
 	@IsNotEmpty()
 	@Field(() => String)
 	notificationTitle: string;
 
-	@Field(() => String, { nullable: true })
+	@Field(() => String)
 	notificationDesc?: string;
 
 	@IsNotEmpty()
@@ -33,10 +34,10 @@ export class NotificationInput {
 	receiverId: ObjectId;
 
 	@Field(() => String)
-	propertyId?: ObjectId;
+	propertyId: ObjectId;
 
 	@Field(() => String)
-	articleId?: ObjectId;
+	articleId: ObjectId;
 }
 
 @InputType()
@@ -48,25 +49,25 @@ class NISearch {
 
 @InputType()
 export class NotificationsInquiry {
-   @IsNotEmpty()
-   @Min(1)
-   @Field(() => Int)
-   page:number;
+	@IsNotEmpty()
+	@Min(1)
+	@Field(() => Int)
+	page: number;
 
-   @IsNotEmpty()
-   @Min(1)
-   @Field(() => Int)
-   limit:number;
+	@IsNotEmpty()
+	@Min(1)
+	@Field(() => Int)
+	limit: number;
 
-   @IsOptional()
-   @Field(() => String, {nullable: true})
-   sort?:string;
+	@IsOptional()
+	@Field(() => String, { nullable: true })
+	sort?: string;
 
-   @IsOptional()
-   @Field(() => Direction, { nullable: true })
-   direction?: Direction;
+	@IsOptional()
+	@Field(() => Direction, { nullable: true })
+	direction?: Direction;
 
-   @IsNotEmpty()
-   @Field(() => NISearch)
+	@IsNotEmpty()
+	@Field(() => NISearch)
 	search: NISearch;
 }

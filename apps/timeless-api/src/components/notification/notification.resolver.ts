@@ -7,7 +7,7 @@ import { ObjectId } from 'mongoose';
 import { AuthMember } from '../auth/decorators/authMember.decorator';
 import { NotificationUpdate } from '../../libs/dto/notification/notification.update';
 import { shapeIntoMongoObjectId } from '../../libs/config';
-import { Notifications, Notification } from '../../libs/dto/notification/notification';
+import { NotificationDTO, Notifications } from '../../libs/dto/notification/notification';
 
 @Resolver()
 export class NotificationResolver {
@@ -24,29 +24,29 @@ export class NotificationResolver {
 	}
 
 	@UseGuards(AuthGuard)
-    @Mutation(() => Notification)
-    public async updateNotification(
-        @Args('input') input:NotificationUpdate, 
-        @AuthMember('_id') memberId:ObjectId
-    ): Promise<Notification>{
-        console.log("Mutation: notificationUpdate ");
-        input._id = shapeIntoMongoObjectId(input._id);
-        return await this.notificationService.updateNotification(memberId, input);
-    }
+	@Mutation(() => NotificationDTO)
+	public async updateNotification(
+		@Args('input') input: NotificationUpdate,
+		@AuthMember('_id') memberId: ObjectId,
+	): Promise<NotificationDTO> {
+		console.log('Mutation: notificationUpdate ');
+		input._id = shapeIntoMongoObjectId(input._id);
+		return await this.notificationService.updateNotification(memberId, input);
+	}
 
 	@UseGuards(AuthGuard)
-	@Mutation(() => Notification)
-	public async removeNotification(@Args('notificationId') input: string): Promise<Notification> {
+	@Mutation(() => NotificationDTO)
+	public async removeNotification(@Args('notificationId') input: string): Promise<NotificationDTO> {
 		console.log('Mutation: removeNotification');
-		const propertyId = shapeIntoMongoObjectId(input);
-		return await this.notificationService.removeNotification(propertyId);
+		const productId = shapeIntoMongoObjectId(input);
+		return await this.notificationService.removeNotification(productId);
 	}
 
 	@UseGuards(AuthGuard)
 	@Mutation(() => Boolean)
-	public async markAsReadNofications(@AuthMember("_id") memberId: ObjectId): Promise<boolean> {
-		console.log("Mutation MarkAsReadNotifications");
+	public async markAsReadNofications(@AuthMember('_id') memberId: ObjectId): Promise<boolean> {
+		console.log('Mutation MarkAsReadNotifications');
 		const count = await this.notificationService.markAsReadNotifications(memberId);
 		return count > 0;
-	}	
+	}
 }

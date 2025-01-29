@@ -10,6 +10,7 @@ import { CS, Notices } from '../../libs/dto/cs/cs';
 import { CsInput, CsInquiry } from '../../libs/dto/cs/cs.input';
 import { CsUpdate } from '../../libs/dto/cs/cs.update';
 import { shapeIntoMongoObjectId } from '../../libs/config';
+import { WithoutGuard } from '../auth/guards/without.guard';
 
 @Resolver()
 export class CsResolver {
@@ -38,8 +39,8 @@ export class CsResolver {
         return await this.csService.updateNotice(memberId, input);
     }
 
-    @Roles(MemberType.ADMIN)
-    @UseGuards(RolesGuard)
+    // @Roles(MemberType.ADMIN)
+    @UseGuards(WithoutGuard)
     @Query(() => Notices)
     public async getNoticesByAdmin(@Args("input") input: CsInquiry,
     @AuthMember('_id') memberId: ObjectId): Promise<Notices> {

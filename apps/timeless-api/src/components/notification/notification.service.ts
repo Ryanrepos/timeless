@@ -1,18 +1,18 @@
 import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId } from 'mongoose';
-import { Notifications } from '../../libs/dto/notification/notification';
 import { NotificationInput, NotificationsInquiry } from '../../libs/dto/notification/notification.input';
 import { T } from '../../libs/types/common';
 import { NotificationStatus } from '../../libs/enums/notification.enum';
 import { Direction, Message } from '../../libs/enums/common.enum';
 import { NotificationUpdate } from '../../libs/dto/notification/notification.update';
+import { NotificationDTO, Notifications } from '../../libs/dto/notification/notification';
 
 @Injectable()
 export class NotificationService {
-	constructor(@InjectModel('Notification') private readonly notificationModel: Model<Notification>) {}
+	constructor(@InjectModel('Notification') private readonly notificationModel: Model<NotificationDTO>) {}
 
-	public async createNotif(input: NotificationInput): Promise<Notification> {
+	public async createNotif(input: NotificationInput): Promise<NotificationDTO> {
 		const notification: NotificationInput = {
 			notificationType: input.notificationType,
 			notificationTitle: input.notificationTitle,
@@ -32,9 +32,8 @@ export class NotificationService {
 		}
 	}
 
-	public async updateNotification(memberId: ObjectId, input: NotificationUpdate): Promise<Notification> {
+	public async updateNotification(memberId: ObjectId, input: NotificationUpdate): Promise<NotificationDTO> {
 		const { _id } = input;
-
 		const result = await this.notificationModel
 			.findOneAndUpdate(
 				{
@@ -46,7 +45,7 @@ export class NotificationService {
 			)
 			.exec();
 		if (!result) throw new InternalServerErrorException(Message.UPDATE_FAILED);
-		return result.toObject() as Notification;
+		return result;
 	}
 
 	public async deleteNotif(input): Promise<any> {
@@ -85,11 +84,11 @@ export class NotificationService {
 		return result[0];
 	}
 
-	public async removeNotification(notificationId: ObjectId): Promise<Notification> {
+	public async removeNotification(notificationId: ObjectId): Promise<NotificationDTO> {
 		const search: T = { _id: notificationId };
 		const result = await this.notificationModel.findOneAndDelete(search).exec();
 		if (!result) throw new InternalServerErrorException(Message.REMOVE_FAILED);
-		return result.toObject() as Notification;
+		return result;
 	}
 
 	public async markAsReadNotifications(memberId: ObjectId): Promise<number> {
