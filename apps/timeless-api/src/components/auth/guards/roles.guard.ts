@@ -19,15 +19,15 @@ export class RolesGuard implements CanActivate {
 		if (context.contextType === 'graphql') {
 			const request = context.getArgByIndex(2).req;
 			const bearerToken = request.headers.authorization;
-			// if (!bearerToken) 
-			// throw new BadRequestException(Message.TOKEN_NOT_EXIST);
+			if (!bearerToken) 
+			throw new BadRequestException(Message.TOKEN_NOT_EXIST);
 
-			if (!bearerToken) {
-				console.warn('Warning: Authorization token is missing.');
-				return null; // Allow the request to continue without a token
-			}
+			// if (!bearerToken) {
+			// 	console.warn('Warning: Authorization token is missing.');
+			// 	return null; // Allow the request to continue without a token
+			// }
 		
-			return bearerToken; // Return the token if it exists
+			// return bearerToken; // Return the token if it exists
 
 			const token = bearerToken.split(' ')[1],
 				authMember = await this.authService.verifyToken(token),

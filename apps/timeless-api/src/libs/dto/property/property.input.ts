@@ -49,7 +49,7 @@ export class PropertyInput {
 	@IsOptional()
 	@Field(() => Boolean, { nullable: true })
 	propertyWorn?: boolean;
-
+	
 	memberId?: ObjectId;
 
 	@IsOptional()
